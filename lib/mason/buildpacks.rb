@@ -11,11 +11,11 @@ class Mason::Buildpacks
     FileUtils.mkdir_p root_dir
 
     Dir.chdir(root_dir) do
-      uri = URI.parse(url)
-      if uri.path =~ /buildpack-(\w+)/
+      if url =~ /buildpack-(\w+)/
         name = $1
         name += "-#{Digest::SHA1.hexdigest(url).to_s[0 .. 8]}" if ad_hoc
-        branch = uri.fragment || "master"
+        branch =  $1 if url =~ /\#(.*)$/
+        branch ||=  "master"
         if File.exists?(name)
           # Can't do a fetch here as it won't update local branches
           system "cd #{name} && git checkout master && git pull"
